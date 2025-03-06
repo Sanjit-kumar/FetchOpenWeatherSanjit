@@ -1,0 +1,32 @@
+import unittest
+from FetchSanjitOpenWeather import get_coordinates_from_api
+
+class TestFetchOpenWeather(unittest.TestCase):
+    def test_get_coordinates_with_city_name(self):
+        result = get_coordinates_from_api("New York")
+        self.assertIsInstance(result, dict)
+        self.assertIn("latitude", result)
+        self.assertIn("longitude", result)
+        self.assertIn("name", result)
+
+    def test_get_coordinates_with_zip_code(self):
+        result = get_coordinates_from_api("10001")
+        self.assertIsInstance(result, dict)
+        self.assertIn("latitude", result)
+        self.assertIn("longitude", result)
+        self.assertIn("name", result)
+
+    def test_get_coordinates_with_invalid_input(self):
+        result = get_coordinates_from_api("InvalidInput")
+        self.assertIsInstance(result, str)
+        self.assertIn("No location found", result)
+
+    def test_get_coordinates_api_error_handling(self):
+        # Simulate an API error by mocking requests.get to raise an HTTPError
+        with unittest.mock.patch('requests.get', side_effect=requests.exceptions.HTTPError):
+            result = get_coordinates_from_api("New York")
+            self.assertIsInstance(result, str)
+            self.assertIn("HTTP error occurred", result)
+
+if __name__ == "__main__":
+    unittest.main()
